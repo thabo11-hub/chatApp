@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as io from 'socket.io-client';
+import { ChatService } from '../services/chatservice.service';
 
 const SOCKET_ENDPOINT = 'localhost:3000';
 
@@ -7,16 +7,24 @@ const SOCKET_ENDPOINT = 'localhost:3000';
   selector: 'app-chat-inbox',
   templateUrl: './chat-inbox.component.html',
   styleUrls: ['./chat-inbox.component.scss']
-})
+})  
 export class ChatInboxComponent implements OnInit {
+  
+  newMessage!: string;
+  messageList: string[] = [];
 
-  socket: any;
-  constructor() { }
-  ngOnInit() {
-    this.setupSocketConnection();
+  constructor(private chatService: ChatService){
+
   }
-  setupSocketConnection() {
-     this.socket = io;
-     
+
+  ngOnInit(){
+    this.chatService.getNewMessage().subscribe((message: string) => {
+      this.messageList.push(message);
+    })
+  }
+
+  sendMessage() {
+    this.chatService.sendMessage(this.newMessage);
+    this.newMessage = '';
   }
 }
